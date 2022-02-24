@@ -95,6 +95,7 @@ int main() {
 
     forks[i].held = 0;
     forks[i].uses = 0;
+    forks[i].times_held = 0;
 
     philosophers[i].id = i;
     philosophers[i].food_consumed = 0;
