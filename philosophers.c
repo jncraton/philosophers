@@ -20,12 +20,11 @@ typedef struct {
 } Philosopher;
 
 void eat(Philosopher * philosopher) {
+  /* Simulates a philosopher eating. Requires both forks to be held. */
+  
   philosopher->food_consumed++;
   printf("Philosopher %d has eaten %d times.\n", philosopher->id, philosopher->food_consumed);
 
-  // Check to make sure both forks are held
-  // This doesn't check to make sure the fork is actually held by the 
-  // correct philosopher, but should still catch most bugs
   assert(philosopher->left_fork->held == 1);
   assert(philosopher->right_fork->held == 1);
   philosopher->left_fork->uses++;
@@ -33,6 +32,7 @@ void eat(Philosopher * philosopher) {
 }
 
 void get_fork(Fork * fork) {
+  /* Blocks until `fork` is available then picks it up */
   for (unsigned i = 0; i<DELAY;i++);
   pthread_mutex_lock(&fork->mutex);
   assert(fork->held == 0);
@@ -40,6 +40,7 @@ void get_fork(Fork * fork) {
 }
 
 void return_fork(Fork * fork) {
+  /* Puts `fork` back and never blocks */
   assert(fork->held == 1);
   fork->held = 0;
   pthread_mutex_unlock(&fork->mutex);
@@ -52,7 +53,7 @@ long int run_philosopher(Philosopher * philosopher) {
    * to eat, a philosopher must be holding their right and left fork. The 
    * naive solution to this problem creates a deadlock. You must find a 
    * better algorithm. The ideal algorithm will still allow concurrent 
-   * eating without creating deadlocks. 
+   * eating without creating deadlocks.
    */
   while (philosopher->food_consumed < HUNGER) {
     get_fork(philosopher->left_fork);
@@ -113,7 +114,7 @@ int main() {
   printf("%ld total fork uses.\n", total_fork_uses);
   assert(total_fork_uses == HUNGER * PHILOSOPHERS * 2);
 
-  printf("Success. All tests passed.\n");
+  printf("All tests passed.\n");
 
   return 0;
 }
