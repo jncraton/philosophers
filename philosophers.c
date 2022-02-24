@@ -7,28 +7,38 @@
 #define PICKUP_TIME 0x1000000
 
 typedef struct {
-  pthread_mutex_t* left_fork;
-  pthread_mutex_t* right_fork;
+  pthread_mutex_t mutex;
+  unsigned int held;
+  unsigned int uses;
+} Fork;
+
+typedef struct {
+  Fork* left_fork;
+  Fork* right_fork;
   unsigned int food_consumed;
   unsigned int id;
 } Philosopher;
 
-unsigned total_food_consumed = 0;
-
 void eat(Philosopher * philosopher) {
-  total_food_consumed++;
   philosopher->food_consumed++;
+
+  assert(philosopher->left_fork->held == 1);
+  assert(philosopher->right_fork->held == 1);
 
   printf("Philosopher %d has eaten %d times.\n", philosopher->id, philosopher->food_consumed);
 }
 
-void get_fork(pthread_mutex_t * fork) {
+void get_fork(Fork * fork) {
     for (int i = 0; i < PICKUP_TIME; i++);
-    pthread_mutex_lock(fork);
+    pthread_mutex_lock(&fork->mutex);
+    assert(fork->held == 0);
+    fork->held = 1;
 }
 
-void return_fork(pthread_mutex_t * fork) {
-    pthread_mutex_unlock(fork);
+void return_fork(Fork * fork) {
+    assert(fork->held == 1);
+    fork->held = 0;
+    pthread_mutex_unlock(&fork->mutex);
 }
 
 long int child(Philosopher * philosopher) {
@@ -49,10 +59,12 @@ int main() {
   pthread_t child_thread[PHILOSOPHERS];
 
   Philosopher philosophers[PHILOSOPHERS];
-  pthread_mutex_t forks[PHILOSOPHERS];
+  Fork forks[PHILOSOPHERS];
 
   for (unsigned long i = 0; i < PHILOSOPHERS; i++) {
-    pthread_mutex_init(&forks[i], 0);
+    pthread_mutex_init(&forks[i].mutex, 0);
+
+    forks[i].held = 0;
 
     philosophers[i].id = i;
     philosophers[i].food_consumed = 0;
@@ -77,7 +89,6 @@ int main() {
   }
 
   assert(reported_total_consumed == HUNGER * PHILOSOPHERS);
-  assert(total_food_consumed == HUNGER * PHILOSOPHERS);
 
   printf("Success. All tests passed.\n");
   
