@@ -14,6 +14,8 @@ Problem
 
 > A philosopher can only eat spaghetti when they have both left and right forks. Each fork can be held by only one philosopher at a time and so a philosopher can use the fork only if it is not being used by another philosopher. After an individual philosopher finishes eating, they need to put down both forks so that the forks become available to others. A philosopher can only take the fork on their right or the one on their left as they become available, and they cannot start eating before getting both forks.
 
+A more detailed description of the problem and possible solutions is available on [Wikipedia](https://en.wikipedia.org/wiki/Dining_philosophers_problem). 
+
 Running
 -------
 
