@@ -23,11 +23,13 @@ void eat(Philosopher * philosopher) {
   philosopher->food_consumed++;
   printf("Philosopher %d has eaten %d times.\n", philosopher->id, philosopher->food_consumed);
 
-  // Check to make sure forks are held
+  // Check to make sure both forks are held
   // This doesn't check to make sure the fork is actually held by the 
   // correct philosopher, but should still catch most bugs
   assert(philosopher->left_fork->held == 1);
   assert(philosopher->right_fork->held == 1);
+  philosopher->left_fork->uses++;
+  philosopher->right_fork->uses++;
 }
 
 void get_fork(Fork * fork) {
@@ -67,6 +69,7 @@ int main() {
     pthread_mutex_init(&forks[i].mutex, 0);
 
     forks[i].held = 0;
+    forks[i].uses = 0;
 
     philosophers[i].id = i;
     philosophers[i].food_consumed = 0;
@@ -83,14 +86,24 @@ int main() {
   unsigned long thread_consumed;
   unsigned long reported_total_consumed = 0;
 
+  unsigned long total_fork_uses = 0;
+
   for (unsigned int i = 0; i < PHILOSOPHERS; i++) {
     pthread_join(child_thread[i], (void*)&thread_consumed);
     assert(thread_consumed == HUNGER);
     assert(philosophers[i].food_consumed == HUNGER);
     reported_total_consumed += thread_consumed;
   }
-
+  
+  printf("%ld total food consumed.\n", reported_total_consumed);
   assert(reported_total_consumed == HUNGER * PHILOSOPHERS);
+
+  for (unsigned int i = 0; i < PHILOSOPHERS; i++) {
+    total_fork_uses += forks[i].uses;
+  }
+
+  printf("%ld total fork uses.\n", total_fork_uses);
+  assert(total_fork_uses == HUNGER * PHILOSOPHERS * 2);
 
   printf("Success. All tests passed.\n");
   
