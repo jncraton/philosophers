@@ -55,6 +55,7 @@ void return_fork(Fork * fork) {
 long int run_philosopher(Philosopher * philosopher) {
   /*
    * Implements one dining philosopher
+   *
    * The purpose of this thread is to `eat` until no longer hungry. In order 
    * to eat, a philosopher must be holding their right and left fork. The 
    * naive solution to this problem creates a deadlock. You must find a 
