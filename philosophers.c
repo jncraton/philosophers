@@ -4,7 +4,7 @@
 
 #define HUNGER 0x10
 #define PHILOSOPHERS 0x10
-#define PICKUP_TIME 0x1000000
+#define DELAY 0x1000000
 
 typedef struct {
   pthread_mutex_t mutex;
@@ -33,7 +33,7 @@ void eat(Philosopher * philosopher) {
 }
 
 void get_fork(Fork * fork) {
-  for (int i = 0; i < PICKUP_TIME; i++);
+  for (unsigned i = 0; i<DELAY;i++);
   pthread_mutex_lock(&fork->mutex);
   assert(fork->held == 0);
   fork->held = 1;
