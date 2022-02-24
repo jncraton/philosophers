@@ -10,6 +10,7 @@ typedef struct {
   pthread_mutex_t mutex;
   unsigned int held;
   unsigned int uses;
+  unsigned int times_held;
 } Fork;
 
 typedef struct {
@@ -27,6 +28,7 @@ void eat(Philosopher * philosopher) {
   philosopher->food_consumed++;
   printf("Philosopher %d has eaten %d times.\n", philosopher->id, philosopher->food_consumed);
 
+  assert(philosopher->left_fork->uses < philosopher->left_fork->times_held);
   assert(philosopher->left_fork->held == 1);
   assert(philosopher->right_fork->held == 1);
   philosopher->left_fork->uses++;
@@ -41,6 +43,7 @@ void get_fork(Fork * fork) {
   pthread_mutex_lock(&fork->mutex);
   assert(fork->held == 0);
   fork->held = 1;
+  fork->times_held++;
 }
 
 void return_fork(Fork * fork) {
@@ -61,6 +64,8 @@ long int run_philosopher(Philosopher * philosopher) {
    * naive solution to this problem creates a deadlock. You must find a 
    * better algorithm. The ideal algorithm will still allow concurrent 
    * eating without creating deadlocks.
+   *
+   * Note that philosophers must return forks bewteen calls to `eat`.
    */
   while (philosopher->food_consumed < HUNGER) {
     get_fork(philosopher->left_fork);
@@ -106,8 +111,6 @@ int main() {
   unsigned long thread_consumed;
   unsigned long reported_total_consumed = 0;
 
-  unsigned long total_fork_uses = 0;
-
   for (unsigned int i = 0; i < PHILOSOPHERS; i++) {
     pthread_join(child_thread[i], (void *) &thread_consumed);
     assert(thread_consumed == HUNGER);
@@ -118,12 +121,17 @@ int main() {
   printf("%ld total food consumed.\n", reported_total_consumed);
   assert(reported_total_consumed == HUNGER * PHILOSOPHERS);
 
+  unsigned long total_fork_uses = 0;
+  unsigned long total_fork_holds = 0;
+
   for (unsigned int i = 0; i < PHILOSOPHERS; i++) {
     total_fork_uses += forks[i].uses;
+    total_fork_holds += forks[i].times_held;
   }
 
   printf("%ld total fork uses.\n", total_fork_uses);
   assert(total_fork_uses == HUNGER * PHILOSOPHERS * 2);
+  assert(total_fork_holds == HUNGER * PHILOSOPHERS * 2);
 
   printf("All tests passed.\n");
 
