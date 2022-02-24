@@ -41,7 +41,7 @@ void return_fork(Fork * fork) {
     pthread_mutex_unlock(&fork->mutex);
 }
 
-long int child(Philosopher * philosopher) {
+long int run_philosopher(Philosopher * philosopher) {
   while (philosopher->food_consumed < HUNGER) {
     get_fork(philosopher->left_fork);
     get_fork(philosopher->right_fork);
@@ -72,7 +72,7 @@ int main() {
     philosophers[i].left_fork = &forks[(i-1) % PHILOSOPHERS];
     
     int code;
-    code = pthread_create(&child_thread[i], NULL, (void*)child, (void*)&philosophers[i]);
+    code = pthread_create(&child_thread[i], NULL, (void*)run_philosopher, (void*)&philosophers[i]);
     if (code) {
       fprintf(stderr, "pthread_create failed with code %d\n", code);
     }
