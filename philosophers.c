@@ -21,11 +21,13 @@ typedef struct {
 
 void eat(Philosopher * philosopher) {
   philosopher->food_consumed++;
+  printf("Philosopher %d has eaten %d times.\n", philosopher->id, philosopher->food_consumed);
 
+  // Check to make sure forks are held
+  // This doesn't check to make sure the fork is actually held by the 
+  // correct philosopher, but should still catch most bugs
   assert(philosopher->left_fork->held == 1);
   assert(philosopher->right_fork->held == 1);
-
-  printf("Philosopher %d has eaten %d times.\n", philosopher->id, philosopher->food_consumed);
 }
 
 void get_fork(Fork * fork) {
