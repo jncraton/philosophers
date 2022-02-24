@@ -20,8 +20,10 @@ typedef struct {
 } Philosopher;
 
 void eat(Philosopher * philosopher) {
-  /* Simulates a philosopher eating. Requires both forks to be held. */
-  
+  /*
+   * Simulates a philosopher eating. Requires both forks to be held. 
+   */
+
   philosopher->food_consumed++;
   printf("Philosopher %d has eaten %d times.\n", philosopher->id, philosopher->food_consumed);
 
@@ -32,15 +34,19 @@ void eat(Philosopher * philosopher) {
 }
 
 void get_fork(Fork * fork) {
-  /* Blocks until `fork` is available then picks it up */
-  for (unsigned i = 0; i<DELAY;i++);
+  /*
+   * Blocks until `fork` is available then picks it up 
+   */
+  for (unsigned i = 0; i < DELAY; i++);
   pthread_mutex_lock(&fork->mutex);
   assert(fork->held == 0);
   fork->held = 1;
 }
 
 void return_fork(Fork * fork) {
-  /* Puts `fork` back and never blocks */
+  /*
+   * Puts `fork` back and never blocks 
+   */
   assert(fork->held == 1);
   fork->held = 0;
   pthread_mutex_unlock(&fork->mutex);
