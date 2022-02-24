@@ -13,8 +13,8 @@ typedef struct {
 } Fork;
 
 typedef struct {
-  Fork* left_fork;
-  Fork* right_fork;
+  Fork *left_fork;
+  Fork *right_fork;
   unsigned int food_consumed;
   unsigned int id;
 } Philosopher;
@@ -33,29 +33,26 @@ void eat(Philosopher * philosopher) {
 }
 
 void get_fork(Fork * fork) {
-    for (int i = 0; i < PICKUP_TIME; i++);
-    pthread_mutex_lock(&fork->mutex);
-    assert(fork->held == 0);
-    fork->held = 1;
+  for (int i = 0; i < PICKUP_TIME; i++);
+  pthread_mutex_lock(&fork->mutex);
+  assert(fork->held == 0);
+  fork->held = 1;
 }
 
 void return_fork(Fork * fork) {
-    assert(fork->held == 1);
-    fork->held = 0;
-    pthread_mutex_unlock(&fork->mutex);
+  assert(fork->held == 1);
+  fork->held = 0;
+  pthread_mutex_unlock(&fork->mutex);
 }
 
 long int run_philosopher(Philosopher * philosopher) {
-  /* Implements one dining philosopher
-  *
-  * The purpose of this thread is to `eat` until no longer hungry
-  *
-  * In order to eat, a philosopher must be holding their right and left fork
-  *
-  * The naive solution to this problem creates a deadlock. You must find 
-  * a better algorithm. The ideal algorithm will still allow concurrent
-  * eating without creating deadlocks.
-  */
+  /*
+   * Implements one dining philosopher * * The purpose of this thread is to
+   * `eat` until no longer hungry * * In order to eat, a philosopher must be
+   * holding their right and left fork * * The naive solution to this problem
+   * creates a deadlock. You must find * a better algorithm. The ideal
+   * algorithm will still allow concurrent * eating without creating deadlocks. 
+   */
   while (philosopher->food_consumed < HUNGER) {
     get_fork(philosopher->left_fork);
     get_fork(philosopher->right_fork);
@@ -84,14 +81,14 @@ int main() {
     philosophers[i].id = i;
     philosophers[i].food_consumed = 0;
     philosophers[i].right_fork = &forks[i];
-    philosophers[i].left_fork = &forks[(i-1) % PHILOSOPHERS];
-    
+    philosophers[i].left_fork = &forks[(i - 1) % PHILOSOPHERS];
+
     int code;
-    code = pthread_create(&child_thread[i], NULL, (void*)run_philosopher, (void*)&philosophers[i]);
+    code = pthread_create(&child_thread[i], NULL, (void *) run_philosopher, (void *) &philosophers[i]);
     if (code) {
       fprintf(stderr, "pthread_create failed with code %d\n", code);
     }
-  } 
+  }
 
   unsigned long thread_consumed;
   unsigned long reported_total_consumed = 0;
@@ -99,12 +96,12 @@ int main() {
   unsigned long total_fork_uses = 0;
 
   for (unsigned int i = 0; i < PHILOSOPHERS; i++) {
-    pthread_join(child_thread[i], (void*)&thread_consumed);
+    pthread_join(child_thread[i], (void *) &thread_consumed);
     assert(thread_consumed == HUNGER);
     assert(philosophers[i].food_consumed == HUNGER);
     reported_total_consumed += thread_consumed;
   }
-  
+
   printf("%ld total food consumed.\n", reported_total_consumed);
   assert(reported_total_consumed == HUNGER * PHILOSOPHERS);
 
@@ -116,6 +113,6 @@ int main() {
   assert(total_fork_uses == HUNGER * PHILOSOPHERS * 2);
 
   printf("Success. All tests passed.\n");
-  
+
   return 0;
 }
