@@ -74,6 +74,10 @@ long int run_philosopher(Philosopher * philosopher) {
   return philosopher->food_consumed;
 }
 
+/*
+ * Setup and test code
+ */
+
 int main() {
   pthread_t child_thread[PHILOSOPHERS];
 
