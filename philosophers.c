@@ -99,8 +99,8 @@ int main() {
 
     philosophers[i].id = i;
     philosophers[i].food_consumed = 0;
-    philosophers[i].right_fork = &forks[i];
-    philosophers[i].left_fork = &forks[(i - 1) % PHILOSOPHERS];
+    philosophers[i].left_fork = &forks[i];
+    philosophers[i].right_fork = &forks[(i + 1) % PHILOSOPHERS];
 
     int code;
     code = pthread_create(&child_thread[i], NULL, (void *) run_philosopher, (void *) &philosophers[i]);
