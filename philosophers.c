@@ -11,48 +11,48 @@ typedef struct {
   unsigned int held;
   unsigned int uses;
   unsigned int times_held;
-} Fork;
+} Chopstick;
 
 typedef struct {
-  Fork *left_fork;
-  Fork *right_fork;
+  Chopstick *left_chopstick;
+  Chopstick *right_chopstick;
   unsigned int food_consumed;
   unsigned int id;
 } Philosopher;
 
 void eat(Philosopher * philosopher) {
   /*
-   * Simulates a philosopher eating. Requires both forks to be held. 
+   * Simulates a philosopher eating. Requires both chopsticks to be held. 
    */
 
   philosopher->food_consumed++;
   printf("Philosopher %d has eaten %d times.\n", philosopher->id, philosopher->food_consumed);
 
-  assert(philosopher->left_fork->uses < philosopher->left_fork->times_held);
-  assert(philosopher->left_fork->held == 1);
-  assert(philosopher->right_fork->held == 1);
-  philosopher->left_fork->uses++;
-  philosopher->right_fork->uses++;
+  assert(philosopher->left_chopstick->uses < philosopher->left_chopstick->times_held);
+  assert(philosopher->left_chopstick->held == 1);
+  assert(philosopher->right_chopstick->held == 1);
+  philosopher->left_chopstick->uses++;
+  philosopher->right_chopstick->uses++;
 }
 
-void get_fork(Fork * fork) {
+void get_chopstick(Chopstick * chopstick) {
   /*
-   * Blocks until `fork` is available then picks it up 
+   * Blocks until `chopstick` is available then picks it up 
    */
   for (unsigned i = 0; i < DELAY; i++);
-  pthread_mutex_lock(&fork->mutex);
-  assert(fork->held == 0);
-  fork->held = 1;
-  fork->times_held++;
+  pthread_mutex_lock(&chopstick->mutex);
+  assert(chopstick->held == 0);
+  chopstick->held = 1;
+  chopstick->times_held++;
 }
 
-void return_fork(Fork * fork) {
+void return_chopstick(Chopstick * chopstick) {
   /*
-   * Puts `fork` back and never blocks 
+   * Puts `chopstick` back and never blocks 
    */
-  assert(fork->held == 1);
-  fork->held = 0;
-  pthread_mutex_unlock(&fork->mutex);
+  assert(chopstick->held == 1);
+  chopstick->held = 0;
+  pthread_mutex_unlock(&chopstick->mutex);
 }
 
 long int run_philosopher(Philosopher * philosopher) {
@@ -60,21 +60,21 @@ long int run_philosopher(Philosopher * philosopher) {
    * Implements one dining philosopher
    *
    * The purpose of this thread is to `eat` until no longer hungry. In order 
-   * to eat, a philosopher must be holding their right and left fork. The 
+   * to eat, a philosopher must be holding their right and left chopstick. The 
    * naive solution to this problem creates a deadlock. You must find a 
    * better algorithm. The ideal algorithm will still allow concurrent 
    * eating without creating deadlocks.
    *
-   * Note that philosophers must return forks bewteen calls to `eat`.
+   * Note that philosophers must return chopsticks bewteen calls to `eat`.
    */
   while (philosopher->food_consumed < HUNGER) {
-    get_fork(philosopher->left_fork);
-    get_fork(philosopher->right_fork);
+    get_chopstick(philosopher->left_chopstick);
+    get_chopstick(philosopher->right_chopstick);
 
     eat(philosopher);
 
-    return_fork(philosopher->right_fork);
-    return_fork(philosopher->left_fork);
+    return_chopstick(philosopher->right_chopstick);
+    return_chopstick(philosopher->left_chopstick);
   }
 
   return philosopher->food_consumed;
@@ -88,19 +88,19 @@ int main() {
   pthread_t child_thread[PHILOSOPHERS];
 
   Philosopher philosophers[PHILOSOPHERS];
-  Fork forks[PHILOSOPHERS];
+  Chopstick chopsticks[PHILOSOPHERS];
 
   for (unsigned long i = 0; i < PHILOSOPHERS; i++) {
-    pthread_mutex_init(&forks[i].mutex, 0);
+    pthread_mutex_init(&chopsticks[i].mutex, 0);
 
-    forks[i].held = 0;
-    forks[i].uses = 0;
-    forks[i].times_held = 0;
+    chopsticks[i].held = 0;
+    chopsticks[i].uses = 0;
+    chopsticks[i].times_held = 0;
 
     philosophers[i].id = i;
     philosophers[i].food_consumed = 0;
-    philosophers[i].left_fork = &forks[i];
-    philosophers[i].right_fork = &forks[(i + 1) % PHILOSOPHERS];
+    philosophers[i].left_chopstick = &chopsticks[i];
+    philosophers[i].right_chopstick = &chopsticks[(i + 1) % PHILOSOPHERS];
 
     int code;
     code = pthread_create(&child_thread[i], NULL, (void *) run_philosopher, (void *) &philosophers[i]);
@@ -122,17 +122,17 @@ int main() {
   printf("%ld total food consumed.\n", reported_total_consumed);
   assert(reported_total_consumed == HUNGER * PHILOSOPHERS);
 
-  unsigned long total_fork_uses = 0;
-  unsigned long total_fork_holds = 0;
+  unsigned long total_chopstick_uses = 0;
+  unsigned long total_chopstick_holds = 0;
 
   for (unsigned int i = 0; i < PHILOSOPHERS; i++) {
-    total_fork_uses += forks[i].uses;
-    total_fork_holds += forks[i].times_held;
+    total_chopstick_uses += chopsticks[i].uses;
+    total_chopstick_holds += chopsticks[i].times_held;
   }
 
-  printf("%ld total fork uses.\n", total_fork_uses);
-  assert(total_fork_uses == HUNGER * PHILOSOPHERS * 2);
-  assert(total_fork_holds == HUNGER * PHILOSOPHERS * 2);
+  printf("%ld total chopstick uses.\n", total_chopstick_uses);
+  assert(total_chopstick_uses == HUNGER * PHILOSOPHERS * 2);
+  assert(total_chopstick_holds == HUNGER * PHILOSOPHERS * 2);
 
   printf("All tests passed.\n");
 
