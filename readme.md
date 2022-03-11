@@ -5,7 +5,7 @@ Dining Philosophers
 
 ![Dining Philosopers](https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/An_illustration_of_the_dining_philosophers_problem.png/463px-An_illustration_of_the_dining_philosophers_problem.png)
 
-This lab provides an opportunity to explore the dining philosophers problem. You task is to provide an implementation for the concurrent `run_philosopher` routing such that philosophers are able to concurrently eat successfully. A more detailed description
+This lab provides an opportunity to explore the dining philosophers problem. You task is to provide an implementation for the concurrent `run_philosopher` routine such that philosophers are able to concurrently eat successfully.
 
 Problem
 -------
