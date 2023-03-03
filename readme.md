@@ -3,7 +3,7 @@ Dining Philosophers
 
 > The dining philosophers problem is an example problem often used in concurrent algorithm design to illustrate synchronization issues and techniques for resolving them. It was originally formulated in 1965 by Edsger Dijkstra as a student exam exercise, presented in terms of computers competing for access to tape drive peripherals.
 
-![Dining Philosopers](https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/An_illustration_of_the_dining_philosophers_problem.png/463px-An_illustration_of_the_dining_philosophers_problem.png)
+![Dining Philosopers](philosophers.png)
 
 This lab provides an opportunity to explore the dining philosophers problem. You task is to provide an implementation for the concurrent `run_philosopher` routine such that philosophers are able to concurrently eat successfully.
 
