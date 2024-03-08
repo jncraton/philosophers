@@ -65,7 +65,7 @@ long int run_philosopher(Philosopher * philosopher) {
    * better algorithm. The ideal algorithm will still allow concurrent 
    * eating without creating deadlocks.
    *
-   * Note that philosophers must return chopsticks bewteen calls to `eat`.
+   * Note that philosophers must return chopsticks between calls to `eat`.
    */
   while (philosopher->food_consumed < HUNGER) {
     get_chopstick(philosopher->left_chopstick);
