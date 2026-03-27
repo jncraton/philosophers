@@ -5,7 +5,7 @@ Dining Philosophers
 
 ![Dining Philosopers](philosophers.png)
 
-This lab provides an opportunity to explore the dining philosophers problem. You task is to provide an implementation for the concurrent `run_philosopher` routine such that philosophers are able to concurrently eat successfully.
+This lab provides an opportunity to explore the dining philosophers problem. Your task is to provide an implementation for the concurrent `run_philosopher` routine such that philosophers are able to concurrently eat successfully.
 
 Problem
 -------
